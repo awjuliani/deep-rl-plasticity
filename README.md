@@ -8,7 +8,7 @@ Continual learning with deep neural networks presents challenges distinct from b
 
 [`hyperparams.yaml`](./hyperparams.yaml) defines all the hyperparameters used for each experiment.
 
-[`analyze.ipynb](./analyze.ipynb) is a Jupyter notebook which can be used to generate the figures and tables used in the paper.
+[`analyze.ipynb`](./analyze.ipynb) is a Jupyter notebook which can be used to generate the figures and tables used in the paper.
 
 ## Conditions
 
