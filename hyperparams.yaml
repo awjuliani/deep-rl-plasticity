@@ -1,0 +1,92 @@
+experiment:
+  algo: ppo
+  save_freq: 1000
+  conditions:
+    baseline:
+      model.adapt_info: ['none', null]
+    reset-final:
+      model.adapt_info: ['sp', [[False, True, True], 0.0, 1.0]]
+    inject:
+     model.adapt_info: ['inject', null]
+    reset-all:
+      model.adapt_info: ['sp', [[True, True, True], 0.0, 1.0]]
+    crelu:
+      model.activation: crelu
+    l2-norm:
+      model.l2_norm: 0.001
+    layernorm:
+      model.layernorm: true
+    sp-5-5:
+      model.adapt_info: ['sp', [[True, True, True], 0.5, 0.5]]
+    ssp-6:
+      model.adapt_info: ['soft-sp', [[True, True, True], 0.999999, 0.000001]]
+    ent-0.1:
+    ppo_trainer.ent_coef: 0.1
+    l2-init:
+      model.l2_init: 0.01
+    w2-init:
+    model.w2_init: 0.01
+    ssp-6-ln:
+      model.adapt_info: ['soft-sp', [[True, True, True], 0.999999, 0.000001]]
+      model.layernorm: true
+    l2-init-ln:
+      model.l2_init: 0.01
+      model.layernorm: true
+    redo-reset-10:
+      model.redo_weight: 0.025
+      model.redo_freq: 10
+  name: null
+  num_sessions: 1
+environment:
+  name: procgen
+  task: coinrun_100
+  shift_type: permute
+  obs_type: conv64
+  env_copies: 11
+model:
+  enc_type: null
+  h_size: 256
+  lr: 0.0005
+  l2_norm: 0.00
+  l2_init: 0.00
+  w2_init: 0.00
+  redo_weight: 0.00
+  redo_freq: 10
+  activation: relu
+  layernorm: false
+  adapt_info: ['none', null]
+ppo_trainer:
+  batch_size: 64
+  buffer_size: 1024
+  num_passes: 3
+  ent_coef: 0.02
+  gamma: 0.99
+  lambda: 0.95
+  clip_param: 0.2
+  num_epochs: 50000
+  shift_points: [5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000]
+  test_episodes: 50
+  test_interval: 100
+sac_trainer:
+  ent_coef: 0.02
+  batch_size: 64
+  epoch_steps: 512
+  gamma: 0.99
+  max_episode_steps: 100
+  num_epochs: 3000
+  shift_points: [1000, 2000]
+  replay_buffer_size: 50000
+  target_update_interval: 2
+  tau: 0.005
+  test_episodes: 50
+  test_interval: 5000
+  update_interval: 4
+  warmup_steps: 1000
+bc_trainer:
+  batch_size: 64
+  buffer_size: 256
+  coping_params: null
+  ent_coef: 0.02
+  num_epochs: 150
+  shift_points: [50]
+  test_episodes: 32

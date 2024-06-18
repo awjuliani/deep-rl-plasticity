@@ -1,0 +1,12 @@
+gym
+torch
+torchvision
+numpy
+matplotlib
+procgen
+tensorboard
+statsmodels
+scipy
+pylatex
+statsmodels
+git+https://github.com/awjuliani/neuro-nav
