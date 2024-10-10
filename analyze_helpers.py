@@ -6,6 +6,7 @@ import yaml
 import matplotlib.pyplot as plt
 import statsmodels.api as sm
 from scipy import stats
+import pandas as pd
 from shared.plotting import (
     condition_name_map,
     label_name_map,
@@ -45,6 +46,7 @@ def columnwise_mean_std(list_of_arrays):
 
 
 def list_recent_subdirs(dir_path="", n=10):
+    # list high level subdirs in path
     subdirs = [x[0][5:] for x in os.walk(dir_path) if x[0].count("/") == 1]
     # list the creation dates of each of the subdir folders
     subdirs = [x for x in subdirs if os.path.isdir(f"{dir_path}/" + x)]
@@ -268,7 +270,7 @@ def plot_corr_row(row, transformed, conditions, metrics, gs, quantity="train_r")
     print(results.summary())
 
     # Save the summary directly to a LaTeX file
-    with open(f'model_summary_{quantity}.tex', 'w') as f:
+    with open(f"model_summary_{quantity}.tex", "w") as f:
         f.write(results.summary().as_latex())
 
     return ax1

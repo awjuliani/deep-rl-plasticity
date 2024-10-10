@@ -10,3 +10,4 @@ scipy
 pylatex
 statsmodels
 git+https://github.com/awjuliani/neuro-nav
+rliable

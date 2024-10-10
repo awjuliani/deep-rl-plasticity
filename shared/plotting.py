@@ -2,6 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
+from rliable import plot_utils
 
 
 label_name_map = {
@@ -44,6 +45,78 @@ condition_name_map = {
     "redo-reset-100": "ReDo Reset (100)",
     "redo-reset-1000": "ReDo Reset (1000)",
 }
+
+
+def plot_result_rliable(
+    sub_dict,
+    title,
+    hyperparams,
+    base_path,
+    current_epoch=None,
+    overview=False,
+    print_title=True,
+    axis=None,
+    add_legend=True,
+    conditions=None,
+    custom_title=None,
+    normalize=True,
+):
+    conv_offset = 20
+    algo = hyperparams["experiment"]["algo"]
+    trainer_params = hyperparams[f"{algo}_trainer"]
+    env_params = hyperparams["environment"]
+    num_epochs = trainer_params["num_epochs"]
+    shift_points = trainer_params["shift_points"]
+    if current_epoch is None:
+        current_epoch = num_epochs
+
+    plt.rcParams.update({"font.size": 14})
+    plt.rcParams["font.family"] = "serif"
+    plt.rcParams["axes.prop_cycle"] = plt.cycler(
+        color=plt.cm.tab20.colors
+    )  # Set3, tab10, tab20, Dark2
+
+    if overview:
+        # remove shift points that are above current epoch
+        shift_points = [x - 50 for x in shift_points if x < current_epoch]
+        # add current epoch to shift points if training is done
+        if current_epoch >= num_epochs - 1:
+            shift_points.append(current_epoch - 50)
+
+    if conditions is None:
+        conditions = list(sub_dict.keys())
+
+    label_num = 0
+    sub_dict = {k: sub_dict[k] for k in conditions if k in sub_dict}
+    rliable_mean = {}
+    rlible_ste = {}
+    metric_names = [custom_title]
+    keys = [condition_name_map[cond] for cond in sub_dict.keys()]
+    for sess_name, (mean_value, ste_value, _) in sub_dict.items():
+        key_name = condition_name_map[sess_name]
+        if len(mean_value) < current_epoch:
+            x = np.arange(len(mean_value))
+            xp = np.linspace(0, len(mean_value) - 1, current_epoch)
+            mean_value = np.interp(xp, x, mean_value)
+            ste_value = np.interp(xp, x, ste_value)
+
+        smooth_mean_value = smooth_data(mean_value, conv_offset)
+        smooth_ste_value = smooth_data(ste_value, conv_offset)
+        if overview:
+            # get subset of mean and ste using shift points
+            smooth_mean_value = smooth_mean_value[shift_points]
+            smooth_ste_value = smooth_ste_value[shift_points]
+            if normalize:
+                smooth_mean_value = smooth_mean_value - smooth_mean_value[0]
+        rliable_mean[key_name] = smooth_mean_value[-1:]
+        rlible_ste[key_name] = np.stack(
+            [
+                smooth_mean_value[-1:] - smooth_ste_value[-1:],
+                smooth_mean_value[-1:] + smooth_ste_value[-1:],
+            ],
+            axis=0,
+        )
+    return rliable_mean, rlible_ste
 
 
 def plot_result(
